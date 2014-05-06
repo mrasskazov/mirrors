@@ -1,6 +1,6 @@
 #/bin/bash
 fatal() {
-  echo "$1"
+  echo "$@"
   /bin/rm -f ~/rsync_updates
   exit 1
 }
@@ -12,9 +12,10 @@ warn() {
 # Find a source mirror near you which supports rsync on
 # https://launchpad.net/ubuntu/+archivemirrors
 # rsync://<iso-country-code>.rsync.archive.ubuntu.com/ubuntu should always work
-RSYNCSOURCE=rsync://ru.rsync.archive.ubuntu.com/ubuntu
+#RSYNCSOURCE=rsync://ru.rsync.archive.ubuntu.com/ubuntu
+RSYNCSOURCE=rsync://mirrors.msk.mirantis.net/mirrors/ubuntu
 # Define where you want the mirror-data to be on your mirror
-BASEDIR=/ex/mirrors/ubuntu/
+BASEDIR=/media/mirrors/mirrors/ubuntu/
 
 if [ -f ~/rsync_updates ]; then
     echo "Updates via rsync already running."
