@@ -3,6 +3,7 @@
 fatal() {
   echo "$@"
   /bin/rm -f /tmp/${SRC_OS}_updates
+  /bin/rm -rf $DST_TMP
   exit 1
 }
 
