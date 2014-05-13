@@ -27,9 +27,7 @@ fi
 touch /tmp/${SRC_OS}_updates
 
 (rsync --verbose \
-      --quiet \
       --archive \
-      --progress \
       --delete \
       --numeric-ids \
       --acls \
