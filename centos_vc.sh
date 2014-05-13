@@ -41,8 +41,6 @@ touch /tmp/${SRC_OS}_updates
       $DST_TMP \
 && cd $DST \
 && mv $DST_TMP $DST_DIR \
-&& rm -f $DST/$SRC_OS \
-&& ln -s $DST_DIR $DST/$SRC_OS \
 && rm -f $LATEST \
 && ln -s $DST_DIR $LATEST \
 && /bin/rm -f /tmp/${SRC_OS}_updates) \
