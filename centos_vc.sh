@@ -17,6 +17,7 @@ export DATE=$(date "+%Y-%m-%d-%H%M%S")
 export DST=/media/mirrors/mirrors
 export DST_TMP=$DST/files/$SRC_OS-processing-$DATE
 export DST_DIR=$DST/files/$SRC_OS-$DATE
+export LATEST=$DST/files/$SRC_OS-latest
 
 if [ -f /tmp/${SRC_OS}_updates ]; then
     echo "Updates via rsync already running."
@@ -33,7 +34,7 @@ touch /tmp/${SRC_OS}_updates
       --numeric-ids \
       --acls \
       --xattrs \
-      --link-dest=../../$SRC_OS \
+      --link-dest=$LATEST \
       --sparse \
       $EXCLUDE \
       $SRC \
@@ -42,6 +43,8 @@ touch /tmp/${SRC_OS}_updates
 && mv $DST_TMP $DST_DIR \
 && rm -f $DST/$SRC_OS \
 && ln -s $DST_DIR $DST/$SRC_OS \
+&& rm -f $LATEST \
+&& ln -s $DST_DIR $LATEST \
 && /bin/rm -f /tmp/${SRC_OS}_updates) \
 || \
 fatal "rsync failed"
