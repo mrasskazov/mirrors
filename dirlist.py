@@ -5,7 +5,9 @@ from datetime import datetime
 import os
 
 
-tpl_head = '''<html>
+tpl_head = '''Content-Type: text/html
+
+<html>
 <head><title>Index of {curdir}</title></head>
 <body bgcolor="white">
 <h1>Index of {curdir}</h1><hr><pre><a href="../">../</a>'''
