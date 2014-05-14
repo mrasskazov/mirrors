@@ -48,8 +48,8 @@ def main():
             v['size'] = '-'
 
         if os.path.islink(f):
-            v['ln_target'] = os.path.realpath(f).replace(os.getcwd() +
-                                                         os.path.sep, '')
+            v['ln_target'] = os.readlink(f).replace(os.getcwd() +
+                                                    os.path.sep, '')
             print tpl_link.format(**v)
         else:
             print tpl_file.format(**v)
