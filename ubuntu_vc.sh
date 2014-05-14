@@ -41,8 +41,8 @@ touch /tmp/${SRC_OS}_updates
 && mv $DST_TMP $DST_DIR \
 && rm -f $LATEST \
 && ln -s $DST_DIR $LATEST \
+&& date -u > $DST_DIR/project/trace/$(hostname -f) \
 && /bin/rm -f /tmp/${SRC_OS}_updates) \
 || \
 fatal "rsync failed"
 
-#&& date -u > $DST_DIR/project/trace/$(hostname -f) \
