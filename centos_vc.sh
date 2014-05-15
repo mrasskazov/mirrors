@@ -16,7 +16,8 @@ export DATE=$(date "+%Y-%m-%d-%H%M%S")
 
 export DST=/media/mirrors/mirrors
 export DST_TMP=$DST/files/$SRC_OS-processing-$DATE
-export DST_DIR=$DST/files/$SRC_OS-$DATE
+export REPO=$SRC_OS-$DATE
+export DST_DIR=$DST/files/$REPO
 export LATEST=$DST/files/$SRC_OS-latest
 
 if [ -f /tmp/${SRC_OS}_updates ]; then
@@ -41,7 +42,8 @@ touch /tmp/${SRC_OS}_updates
 && mv $DST_TMP $DST_DIR \
 && rm -f $LATEST \
 && ln -s $DST_DIR $LATEST \
-&& /bin/rm -f /tmp/${SRC_OS}_updates) \
+&& /bin/rm -f /tmp/${SRC_OS}_updates \
+&& echo 'Synced to: <a href="http://mirrors-local-msk.msk.mirantis.net/files/'$REPO'">'$REPO'</a>') \
 || \
 fatal "rsync failed"
 
