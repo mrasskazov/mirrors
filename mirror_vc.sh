@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash -xv
 
 fatal() {
   echo "$@"
@@ -7,9 +7,24 @@ fatal() {
   exit 1
 }
 
-export SRC_OS=centos
+export SRC_OS=${1:-Unknown}
 
-#export EXCLUDE="--exclude \"local*\" --exclude \"isos\""
+case "$SRC_OS" in
+    "ubuntu")
+        function additional() {
+            date -u > $DST_DIR/project/trace/$(hostname -f)
+        }
+        #export EXCLUDE="--exclude \"Packages*\" --exclude \"Sources*\" --exclude \"Release*\""
+        ;;
+    "centos")
+        function additional() {
+            return 0
+        }
+        #export EXCLUDE="--exclude \"local*\" --exclude \"isos\""
+        ;;
+    *)
+        fatal "Wrong source Operating System"
+esac
 
 export SRC="rsync://mirrors.msk.mirantis.net/mirrors/${SRC_OS}/"
 export DATE=$(date "+%Y-%m-%d-%H%M%S")
@@ -42,6 +57,7 @@ touch /tmp/${SRC_OS}_updates
 && mv $DST_TMP $DST_DIR \
 && rm -f $LATEST \
 && ln -s $DST_DIR $LATEST \
+&& additional \
 && /bin/rm -f /tmp/${SRC_OS}_updates \
 && echo 'Synced to: <a href="http://mirrors-local-msk.msk.mirantis.net/files/'$REPO'">'$REPO'</a>') \
 || \

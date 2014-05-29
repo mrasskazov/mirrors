@@ -8,10 +8,10 @@ fatal() {
 }
 
 export SRC_OS=ubuntu
-export SRC="rsync://mirrors.msk.mirantis.net/mirrors/${SRC_OS}/"
 
 #export EXCLUDE="--exclude \"Packages*\" --exclude \"Sources*\" --exclude \"Release*\""
 
+export SRC="rsync://mirrors.msk.mirantis.net/mirrors/${SRC_OS}/"
 export DATE=$(date "+%Y-%m-%d-%H%M%S")
 
 export DST=/media/mirrors/mirrors
