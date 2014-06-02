@@ -8,6 +8,7 @@ fatal() {
 }
 
 export SRC_OS=${1:-Unknown}
+export SAVE_LAST_DAYS=${2:-10}
 
 case "$SRC_OS" in
     "ubuntu")
@@ -28,6 +29,7 @@ esac
 
 export SRC="rsync://mirrors.msk.mirantis.net/mirrors/${SRC_OS}/"
 export DATE=$(date "+%Y-%m-%d-%H%M%S")
+export WARN_DATE=$(date "+%Y%m%d" -d "$SAVE_LAST_DAYS days ago")
 
 export DST=/media/mirrors/mirrors
 export DST_TMP=$DST/files/$SRC_OS-processing-$DATE
@@ -63,3 +65,17 @@ touch /tmp/${SRC_OS}_updates
 || \
 fatal "rsync failed"
 
+
+# Clear mirrors older then $SAVE_LAST_DAYS and w/o symlinks on self
+DIRS=$(find -H $DST/files/ -maxdepth 1 -type d -name $SRC_OS\* -mtime +$SAVE_LAST_DAYS | sort -nr)
+for d in $DIRS; do
+    ddate=$(echo $d | awk -F '[-]' '{print $2$3$4}')
+    [ "$ddate" -gt "$WARN_DATE" ] && continue
+    fd=$(readlink -f $d)
+    LINKS=$(find -H $DST/files/ -maxdepth 1 -type l -xtype d -lname $fd; find -H $DST -maxdepth 1 -type l -xtype d -lname $fd)
+    if [ "$LINKS" = "" ]; then
+        rm -rf $fd
+        continue
+    fi
+    echo "skip because symlinks $LINKS points to $fd"
+done
