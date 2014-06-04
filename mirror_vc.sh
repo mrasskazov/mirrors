@@ -13,6 +13,7 @@ export SAVE_LAST_DAYS=${2:-10}
 
 case "$SRC_MIRR" in
     "ubuntu")
+        SYNCTYPE=rsync
         export SRC="rsync://mirrors.msk.mirantis.net/mirrors/${SRC_MIRR}/"
         function additional() {
             date -u > $DST_DIR/project/trace/$(hostname -f)
@@ -20,6 +21,7 @@ case "$SRC_MIRR" in
         #export EXCLUDE="--exclude \"Packages*\" --exclude \"Sources*\" --exclude \"Release*\""
         ;;
     "centos")
+        SYNCTYPE=rsync
         export SRC="rsync://mirrors.msk.mirantis.net/mirrors/${SRC_MIRR}/"
         function additional() {
             return 0
@@ -27,11 +29,20 @@ case "$SRC_MIRR" in
         #export EXCLUDE="--exclude \"local*\" --exclude \"isos\""
         ;;
     "docker")
+        SYNCTYPE=rsync
         export SRC="rsync://mirror.yandex.ru/mirrors/${SRC_MIRR}/"
         function additional() {
             return 0
         }
         export EXCLUDE='--exclude .temp --exclude .lastsync --exclude .mirror.yandex.ru'
+        ;;
+    "jenkins")
+        SYNCTYPE=wget
+        export SRC="http://pkg.jenkins-ci.org/debian-stable/"
+        function additional() {
+            return 0
+        }
+        #export EXCLUDE=''
         ;;
     *)
         fatal "Wrong source mirror '$SRC_MIRR'"
@@ -46,33 +57,56 @@ export REPO=$SRC_MIRR-$DATE
 export DST_DIR=$DST/files/$REPO
 export LATEST=$DST/files/$SRC_MIRR-latest
 
+
+success() {
+    cd $DST \
+    && mv $DST_TMP $DST_DIR \
+    && rm -f $LATEST \
+    && ln -s $DST_DIR $LATEST \
+    && additional \
+    && echo 'Synced to: <a href="http://mirrors-local-msk.msk.mirantis.net/files/'$REPO'">'$REPO'</a>'
+}
+
+via_rsync() {
+    rsync --verbose \
+          --archive \
+          --delete \
+          --numeric-ids \
+          --acls \
+          --xattrs \
+          --link-dest=$LATEST \
+          --sparse \
+          $EXCLUDE \
+          $SRC \
+          $DST_TMP \
+    && success \
+    || fatal "rsync failed"
+}
+
+via_wget() {
+    cp -rl $(readlink -f $LATEST) $DST_TMP
+         #--timestamping \
+    wget --mirror \
+         --no-parent \
+         --convert-links \
+         --no-verbose \
+         $EXCLUDE \
+         --no-host-directories \
+         --directory-prefix=$DST_TMP \
+         $SRC \
+    && success \
+    || fatal "wget failed"
+}
+
+
 if [ -f /tmp/${SRC_MIRR}_updates ]; then
     echo "Updates via rsync already running."
     exit 0
 fi
 
 touch /tmp/${SRC_MIRR}_updates
-
-(rsync --verbose \
-      --archive \
-      --delete \
-      --numeric-ids \
-      --acls \
-      --xattrs \
-      --link-dest=$LATEST \
-      --sparse \
-      $EXCLUDE \
-      $SRC \
-      $DST_TMP \
-&& cd $DST \
-&& mv $DST_TMP $DST_DIR \
-&& rm -f $LATEST \
-&& ln -s $DST_DIR $LATEST \
-&& additional \
-&& /bin/rm -f /tmp/${SRC_MIRR}_updates \
-&& echo 'Synced to: <a href="http://mirrors-local-msk.msk.mirantis.net/files/'$REPO'">'$REPO'</a>') \
-|| \
-fatal "rsync failed"
+via_$SYNCTYPE
+rm -f /tmp/${SRC_MIRR}_updates
 
 
 # Clear mirrors older then $SAVE_LAST_DAYS and w/o symlinks on self
