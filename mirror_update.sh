@@ -22,8 +22,9 @@ case "$SRC_MIRR" in
         export EXCLUDE='--exclude .temp --exclude .lastsync --exclude .mirror.yandex.ru'
         ;;
     "jenkins")
-        SYNCTYPE=wget
-        export SRC="http://pkg.jenkins-ci.org/debian-stable/"
+        #SYNCTYPE=wget
+        #export SRC="http://pkg.jenkins-ci.org/debian-stable/"
+        export SRC="rsync://mirror.yandex.ru/mirrors/jenkins/debian-stable"
         #export EXCLUDE=''
         ;;
     *)
