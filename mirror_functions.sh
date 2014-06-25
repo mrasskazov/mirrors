@@ -26,7 +26,7 @@ function job_lock() {
             echo "Updates via rsync already running."
             exit 0
         fi
-        touch $LOCKFILE
+        echo "$SRC" > $LOCKFILE
     elif [ "$1" = "unset" ]; then
         rm -f $LOCKFILE
     fi
@@ -90,7 +90,7 @@ function via_wget() {
          $EXCLUDE \
          --no-host-directories \
          --directory-prefix=$DST_TMP \
-         $SRC \
+         -i $LOCKFILE \
     && success \
     || fatal "wget failed"
 }

@@ -23,8 +23,8 @@ case "$SRC_MIRR" in
         ;;
     "jenkins")
         SYNCTYPE=wget
-        export SRC="http://pkg.jenkins-ci.org/debian-stable/"
-        #export EXCLUDE=''
+        export SRC="http://pkg.jenkins-ci.org/debian-stable/
+http://pkg.jenkins-ci.org/debian-stable/binary/Packages"
         ;;
     *)
         fatal "Wrong source mirror '$SRC_MIRR'"
