@@ -8,7 +8,7 @@ source $TOP_DIR/mirror_functions.sh
 case "$SRC_MIRR" in
     "ubuntu")
         export SRC="rsync://mirrors.msk.mirantis.net/mirrors/${SRC_MIRR}/"
-        function additional() {
+        function past_download() {
             date -u > $DST_DIR/project/trace/$(hostname -f)
         }
         #export EXCLUDE="--exclude \"Packages*\" --exclude \"Sources*\" --exclude \"Release*\""
@@ -24,7 +24,13 @@ case "$SRC_MIRR" in
     "jenkins")
         SYNCTYPE=wget
         export SRC="http://pkg.jenkins-ci.org/debian-stable/
-http://pkg.jenkins-ci.org/debian-stable/binary/Packages"
+http://pkg.jenkins-ci.org/debian-stable/binary/Packages
+http://pkg.jenkins-ci.org/debian-stable/binary/Release
+http://pkg.jenkins-ci.org/debian-stable/binary/Release.gpg
+http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key"
+        function past_download() {
+            mv $LATEST/debian/jenkins-ci.org.key $LATEST/debian/Release.key
+        }
         ;;
     *)
         fatal "Wrong source mirror '$SRC_MIRR'"

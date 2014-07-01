@@ -15,7 +15,7 @@ export DST_DIR=$DST/files/$REPO
 export LATEST=$DST/files/$SRC_MIRR-latest
 
 
-function additional() {
+function past_download() {
     return 0
 }
 
@@ -44,7 +44,7 @@ function success() {
     && mv $DST_TMP $DST_DIR \
     && rm -f $LATEST \
     && ln -s $DST_DIR $LATEST \
-    && additional \
+    && past_download \
     && echo 'Synced to: <a href="http://mirrors-local-msk.msk.mirantis.net/files/'$REPO'">'$REPO'</a>'
 }
 
