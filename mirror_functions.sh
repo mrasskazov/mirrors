@@ -88,6 +88,7 @@ function via_wget() {
          --no-parent \
          --convert-links \
          --progress=dot:mega \
+         --referer=http://fallback.jenkins-ci.org \
          $EXCLUDE \
          --no-host-directories \
          --directory-prefix=$DST_TMP \
