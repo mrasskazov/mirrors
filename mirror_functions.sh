@@ -83,10 +83,11 @@ function via_rsync() {
 function via_wget() {
     cp -rl $(readlink -f $LATEST) $DST_TMP
          #--timestamping \
+         #--no-verbose \
     wget --mirror \
          --no-parent \
          --convert-links \
-         --no-verbose \
+         --progress=dot:mega \
          $EXCLUDE \
          --no-host-directories \
          --directory-prefix=$DST_TMP \
