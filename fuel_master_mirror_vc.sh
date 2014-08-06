@@ -1,5 +1,7 @@
 #!/bin/bash -ex
 
+TOP_DIR=$(cd $(dirname "$0") && pwd)
+
 export PATH=/bin:/usr/bin:/sbin:/usr/sbin:$PATH
 
 export BUILD_DIR=../tmp/$(basename $(pwd))/build
@@ -8,15 +10,15 @@ export LOCAL_MIRROR=../tmp/$(basename $(pwd))/local_mirror
 
 export LANG=C
 
-mirror=5.1
+mirror=${mirror:-5.1}
 
 if [ $purge_packages = true ]; then
   extra="$extra --del"
 fi
 
-only_resync_from_srv11=0
+only_resync=${only_resync:-false}
 
-if [ $only_resync_from_srv11 = 0 ]; then
+if [ "$only_resync" = "false" ]; then
   make deep_clean
 
   for commit in $extra_commits; do
@@ -36,14 +38,22 @@ mirrors_fail=""
 #ssh jenkins@srv08-srt.srt.mirantis.net sudo chown -R jenkins /var/www/fwm/$mirror/ || true
 #rsync /var/www/fwm/$mirror/* srv08-srt.srt.mirantis.net:/var/www/fwm/$mirror/ -r -t -v $extra || mirrors_fail+=" srv08"
 
+source $TOP_DIR/rsync_functions.sh
 
-rsync /var/www/fwm/$mirror/* rsync://fuel-mirror.kha.mirantis.net/ostf-mirror/fwm/$mirror/ -r -t -v $extra || mirrors_fail+=" kha"
+RSYNCUSER=ostf-mirror
+RSYNCROOT=fwm
+FILESROOT=fwm/files
 
-rsync /var/www/fwm/$mirror/* rsync://fuel-mirror.msk.mirantis.net/ostf-mirror/fwm/$mirror/ -r -t -v $extra || mirrors_fail+=" msk"
+SRCDIR=/var/www/fwm/$mirror
 
-rsync /var/www/fwm/$mirror/* rsync://fuel-mirror.srt.mirantis.net/ostf-mirror/fwm/$mirror/ -r -t -v $extra || mirrors_fail+=" srt"
-
-rsync /var/www/fwm/$mirror/* rsync://fuel-repository.vm.mirantis.net/ostf-mirror/fwm/$mirror/ -r -t -v $extra || mirrors_fail+=" usa_ext"
+RSYNCHOST=fuel-mirror.kha.mirantis.net
+rsync_transfer $SRCDIR $RSYNCHOST || mirrors_fail+=" kha"
+RSYNCHOST=fuel-mirror.msk.mirantis.net
+rsync_transfer $SRCDIR $RSYNCHOST || mirrors_fail+=" msk"
+RSYNCHOST=fuel-mirror.srt.mirantis.net
+rsync_transfer $SRCDIR $RSYNCHOST || mirrors_fail+=" srt"
+RSYNCHOST=fuel-repository.vm.mirantis.net
+rsync_transfer $SRCDIR $RSYNCHOST || mirrors_fail+=" usa_ext"
 
 #rsync /var/www/fwm/$mirror/* ss0078.svwh.net:/var/www/fwm/$mirror/ -r -t -v $extra || mirrors_fail+=" us"
 

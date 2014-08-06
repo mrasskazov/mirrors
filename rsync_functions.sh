@@ -80,7 +80,7 @@ function job_lock() {
     if [ "$1" = "set" ]; then
         if [ -f $LOCKFILE ]; then
             echo "Updates via rsync already running ($LOCKFILE)."
-            exit 0
+            exit 1
         fi
         echo "$SRC" > $LOCKFILE
     elif [ "$1" = "unset" ]; then
@@ -119,7 +119,7 @@ function rsync_transfer() {
 
     LOCKFILE=$PROJECTNAME.lock
     job_lock $LOCKFILE set
-    rsync $OPTIONS $SRCDIR $RSYNCHOST::$RSYNCUSER/$FILESROOT/$TGTDIR \
+    rsync $OPTIONS $SRCDIR/ $RSYNCHOST::$RSYNCUSER/$FILESROOT/$TGTDIR \
         && success $LOCKFILE \
         || fatal $LOCKFILE "sync failed"
 }
