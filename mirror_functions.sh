@@ -3,7 +3,7 @@
 export LANG=C
 export SYNCTYPE=rsync
 
-export SAVE_LAST_DAYS=${2:-10}
+export SAVE_LAST_DAYS=${2:-31}
 
 export DATE=$(date "+%Y-%m-%d-%H%M%S")
 export WARN_DATE=$(date "+%Y%m%d" -d "$SAVE_LAST_DAYS days ago")
