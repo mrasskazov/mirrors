@@ -100,8 +100,8 @@ function fatal() {
 function success() {
     local LOCKNAME=$1
     shift
-    rsync_delete_file $PROJECTNAME-latest \
-        && rsync -l $(get_symlink $TGTDIR) $RSYNCHOST::$RSYNCUSER/$FILESROOT/$PROJECTNAME-latest \
+    rsync_delete_file $PROJECTNAME-staging \
+        && rsync -l $(get_symlink $TGTDIR) $RSYNCHOST::$RSYNCUSER/$FILESROOT/$PROJECTNAME-staging \
         && echo 'Synced to: <a href="http://'$RSYNCHOST'/'$FILESROOT'/'$TGTDIR'">'$TGTDIR'</a>' \
         && clear_old_versions \
         && job_lock $LOCKNAME unset
@@ -115,7 +115,7 @@ function rsync_transfer() {
     TGTDIR=${3:-"$PROJECTNAME-$DATE"}
 
     OPTIONS="--verbose --force --ignore-errors --delete-excluded --exclude-from=$EXCLUDES
-          --delete --link-dest=/$FILESROOT/$PROJECTNAME-latest -a"
+          --delete --link-dest=/$FILESROOT/$PROJECTNAME-staging -a"
 
     LOCKFILE=$PROJECTNAME.lock
     job_lock $LOCKFILE set
