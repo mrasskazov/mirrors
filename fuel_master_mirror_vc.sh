@@ -11,6 +11,8 @@ export LOCAL_MIRROR=../tmp/$(basename $(pwd))/local_mirror
 export LANG=C
 
 mirror=${mirror:-5.1}
+#set docker mirror to srt
+export MIRROR_DOCKER=http://fuel-mirror.srt.mirantis.net/fwm/${mirror}/docker
 
 if [ $purge_packages = true ]; then
   extra="$extra --del"
