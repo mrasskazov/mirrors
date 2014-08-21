@@ -112,7 +112,7 @@ function rsync_transfer() {
     SRCDIR=$1
     RSYNCHOST=${RSYNCHOST:-$2}
     PROJECTNAME=$(basename $SRCDIR)
-    TGTDIR=${3:-"$PROJECTNAME-$DATE"}
+    export TGTDIR=${3:-"$PROJECTNAME-$DATE"}
 
     OPTIONS="--verbose --force --ignore-errors --delete-excluded --exclude-from=$EXCLUDES
           --delete --link-dest=/$FILESROOT/$PROJECTNAME-staging -a"

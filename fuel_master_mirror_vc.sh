@@ -64,4 +64,10 @@ rsync_transfer $SRCDIR $RSYNCHOST || mirrors_fail+=" usa_ext"
 if [[ -n "$mirrors_fail" ]]; then
   echo Some mirrors failed to update: $mirrors_fail
   exit 1
+else
+  export MIRROR_VERSION="${TGTDIR}"
+  export MIRROR_BASE="http://fuel-mirror.msk.mirantis.net/fwm/files/${MIRROR_VERSION}"
+  echo "MIRROR = ${mirror}" > ${WORKSPACE:-"."}/mirror_staging.txt
+  echo "MIRROR_VERSION = ${MIRROR_VERSION}" >> ${WORKSPACE:-"."}/mirror_staging.txt
+  echo "MIRROR_BASE = http://fuel-mirror.msk.mirantis.net/fwm/files/${MIRROR_VERSION}" >> ${WORKSPACE:-"."}/mirror_staging.txt
 fi
