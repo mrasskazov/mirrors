@@ -9,6 +9,7 @@ TOP_DIR=$(cd $(dirname "$0") && pwd)
 source $TOP_DIR/rsync_functions.sh
 
 SYMLINK_FILE=$(get_symlink "files/$STABLE_VERSION")
+STABLE_SYMLINK_FILE=$(get_symlink "$STABLE_VERSION")
 
 RSYNCUSER=ostf-mirror
 RSYNCROOT=fwm
@@ -25,6 +26,7 @@ for RSYNCHOST in $RSYNCHOSTS; do
         rsync -rv --delete --include=$MIRROR '--exclude=*' \
             $(get_empty_dir)/ $RSYNCHOST::$RSYNCUSER/$RSYNCROOT/ \
             && rsync -vl $SYMLINK_FILE $RSYNCHOST::$RSYNCUSER/$RSYNCROOT/$MIRROR \
+            && rsync -vl $STABLE_SYMLINK_FILE $RSYNCHOST::$RSYNCUSER/$FILESROOT/${STABLE_VERSION}-stable \
             || mirrors_fail+=" $RSYNCHOST"
     else
         mirrors_fail+=" $RSYNCHOST"
