@@ -56,6 +56,7 @@ ENDRELEASE
                 gpg --yes --armor -o Release.gpg -sb Release
 
             popd
+            gpg --export -a product@mirantis.com > $LATEST/product.mirantis.com.gpg.key
         }
         ;;
     *)
