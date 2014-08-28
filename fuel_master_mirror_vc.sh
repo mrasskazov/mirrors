@@ -70,4 +70,5 @@ else
   echo "MIRROR = ${mirror}" > ${WORKSPACE:-"."}/mirror_staging.txt
   echo "MIRROR_VERSION = ${MIRROR_VERSION}" >> ${WORKSPACE:-"."}/mirror_staging.txt
   echo "MIRROR_BASE = http://fuel-mirror.msk.mirantis.net/fwm/files/${MIRROR_VERSION}" >> ${WORKSPACE:-"."}/mirror_staging.txt
+  echo 'Updated: '${MIRROR_VERSION}'<br> <a href="http://fuel-repository.mirantis.com//'$FILESROOT'/'$TGTDIR'">'usa_ext'</a> <a href="http://fuel-mirror.msk.mirantis.net/'$FILESROOT'/'$TGTDIR'">'msk'</a> <a href="http://fuel-mirror.srt.mirantis.net/'$FILESROOT'/'$TGTDIR'">'srt'</a> <a href="http://fuel-mirror.kha.mirantis.net/'$FILESROOT'/'$TGTDIR'">'kha'</a>'
 fi
