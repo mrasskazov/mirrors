@@ -10,7 +10,7 @@ FILESROOT=fwm/files
 SRCDIR=${SRCDIR:-""}
 
 export DATE=$(date "+%Y-%m-%d-%H%M%S")
-export SAVE_LAST_DAYS=${SAVE_LAST_DAYS:-31}
+export SAVE_LAST_DAYS=${SAVE_LAST_DAYS:-61}
 export WARN_DATE=$(date "+%Y%m%d" -d "$SAVE_LAST_DAYS days ago")
 
 
