@@ -35,7 +35,9 @@ done
 
 if [[ -n "$mirrors_fail" ]]; then
   echo Some mirrors failed to update: $mirrors_fail
+  rm $WORKSPACE/build_description.txt
   exit 1
 else
-  echo ${STABLE_VERSION}' is stable.  <a href="http://fuel-repository.mirantis.com//'$FILESROOT'/'$STABLE_VERSION'">'usa_ext'</a> <a href="http://fuel-mirror.msk.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'msk'</a> <a href="http://fuel-mirror.srt.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'srt'</a> <a href="http://fuel-mirror.kha.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'kha'</a>'
+  echo ${STABLE_VERSION}' is stable.<br> <a href="http://fuel-repository.mirantis.com//'$FILESROOT'/'$STABLE_VERSION'">'usa_ext'</a> <a href="http://fuel-mirror.msk.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'msk'</a> <a href="http://fuel-mirror.srt.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'srt'</a> <a href="http://fuel-mirror.kha.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'kha'</a>'
+  echo ${STABLE_VERSION}' is stable.<br> <a href="http://fuel-repository.mirantis.com//'$FILESROOT'/'$STABLE_VERSION'">'usa_ext'</a> <a href="http://fuel-mirror.msk.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'msk'</a> <a href="http://fuel-mirror.srt.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'srt'</a> <a href="http://fuel-mirror.kha.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'kha'</a>' > $WORKSPACE/build_description.txt
 fi
