@@ -13,6 +13,8 @@ export LANG=C
 mirror=${mirror:-5.1}
 #set docker mirror to srt
 export MIRROR_DOCKER=http://fuel-mirror.srt.mirantis.net/fwm/${mirror}/docker
+# dirty hack for first run
+wget -o - $MIRROR_DOCKER || export MIRROR_DOCKER=http://fuel-mirror.srt.mirantis.net/fwm/5.1/docker
 
 if [ $purge_packages = true ]; then
   extra="$extra --del"
