@@ -10,6 +10,7 @@ export LOCAL_MIRROR=../tmp/$(basename $(pwd))/local_mirror
 
 export LANG=C
 
+export FUEL_MAIN_BRANCH=${FUEL_MAIN_BRANCH:-master}
 export mirror=${mirror:-$(awk -F '[:=?]' '/^PRODUCT_VERSION\>/ {print $NF}' config.mk)}
 #set docker mirror to srt
 export MIRROR_DOCKER=http://fuel-mirror.srt.mirantis.net/fwm/${mirror}/docker
@@ -72,5 +73,6 @@ else
   echo "MIRROR = ${mirror}" > ${WORKSPACE:-"."}/mirror_staging.txt
   echo "MIRROR_VERSION = ${MIRROR_VERSION}" >> ${WORKSPACE:-"."}/mirror_staging.txt
   echo "MIRROR_BASE = http://fuel-mirror.msk.mirantis.net/fwm/files/${MIRROR_VERSION}" >> ${WORKSPACE:-"."}/mirror_staging.txt
+  echo "FUEL_MAIN_BRANCH = ${FUEL_MAIN_BRANCH}" >> ${WORKSPACE:-"."}/mirror_staging.txt
   echo 'Updated: '${MIRROR_VERSION}'<br> <a href="http://fuel-repository.mirantis.com//'$FILESROOT'/'$TGTDIR'">'usa_ext'</a> <a href="http://fuel-mirror.msk.mirantis.net/'$FILESROOT'/'$TGTDIR'">'msk'</a> <a href="http://fuel-mirror.srt.mirantis.net/'$FILESROOT'/'$TGTDIR'">'srt'</a> <a href="http://fuel-mirror.kha.mirantis.net/'$FILESROOT'/'$TGTDIR'">'kha'</a>'
 fi
