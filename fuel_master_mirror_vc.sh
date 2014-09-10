@@ -10,7 +10,7 @@ export LOCAL_MIRROR=../tmp/$(basename $(pwd))/local_mirror
 
 export LANG=C
 
-mirror=${mirror:-5.1}
+export mirror=${mirror:-$(awk -F '[:=?]' '/^PRODUCT_VERSION\>/ {print $NF}' config.mk)}
 #set docker mirror to srt
 export MIRROR_DOCKER=http://fuel-mirror.srt.mirantis.net/fwm/${mirror}/docker
 # dirty hack for first run
