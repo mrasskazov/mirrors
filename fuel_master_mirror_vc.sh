@@ -41,8 +41,6 @@ ls /var/www/fwm/$mirror/centos/os/x86_64/
 sudo createrepo -g /var/www/fwm/$mirror/centos/os/x86_64/comps.xml -o /var/www/fwm/$mirror/centos/os/x86_64 /var/www/fwm/$mirror/centos/os/x86_64
 
 mirrors_fail=""
-#ssh jenkins@srv08-srt.srt.mirantis.net sudo chown -R jenkins /var/www/fwm/$mirror/ || true
-#rsync /var/www/fwm/$mirror/* srv08-srt.srt.mirantis.net:/var/www/fwm/$mirror/ -r -t -v $extra || mirrors_fail+=" srv08"
 
 source $TOP_DIR/rsync_functions.sh
 
@@ -70,11 +68,6 @@ RSYNCUSER=ostf-mirror
 RSYNCHOST_USA=fuel-repository.vm.mirantis.net
 rsync_transfer $SRCDIR $RSYNCHOST_USA || mirrors_fail+=" usa_ext"
 
-
-#rsync /var/www/fwm/$mirror/* ss0078.svwh.net:/var/www/fwm/$mirror/ -r -t -v $extra || mirrors_fail+=" us"
-
-#ssh srv08-srt.srt.mirantis.net sudo rsync -vaP /var/www/fwm/$mirror/ rsync://repo.srt.mirantis.net/repo/fuelweb-repo/$mirror/ -c $extra || mirrors_fail+=" ext"
-
 if [[ -n "$mirrors_fail" ]]; then
   echo Some mirrors failed to update: $mirrors_fail
   exit 1
@@ -85,5 +78,5 @@ else
   echo "MIRROR_VERSION = ${MIRROR_VERSION}" >> ${WORKSPACE:-"."}/mirror_staging.txt
   echo "MIRROR_BASE = $MIRROR_BASE" >> ${WORKSPACE:-"."}/mirror_staging.txt
   echo "FUEL_MAIN_BRANCH = ${FUEL_MAIN_BRANCH}" >> ${WORKSPACE:-"."}/mirror_staging.txt
-  echo 'Updated: '${MIRROR_VERSION}'<br> <a href="mirror.fuel-infra.org//'$FILESROOT'/'$TGTDIR'">'ext'</a> <a href="http://$RSYNCHOST_MSK/'$FILESROOT'/'$TGTDIR'">'msk'</a> <a href="http://$RSYNCHOST_SRT/'$FILESROOT'/'$TGTDIR'">'srt'</a> <a href="http://$RSYNCHOST_KHA/'$FILESROOT'/'$TGTDIR'">'kha'</a>'
+  echo "Updated: ${MIRROR_VERSION}<br> <a href='http://mirror.fuel-infra.org//${FILESROOT}/${TGTDIR}'>ext</a> <a href='http://${RSYNCHOST_MSK}/${FILESROOT}/${TGTDIR}'>msk</a> <a href='http://${RSYNCHOST_SRT}/${FILESROOT}/${TGTDIR}'>srt</a> <a href='http://${RSYNCHOST_KHA}/${FILESROOT}/${TGTDIR}'>kha</a>"
 fi
