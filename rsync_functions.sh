@@ -110,7 +110,7 @@ function success() {
 ######################################################
 function rsync_transfer() {
     SRCDIR=$1
-    RSYNCHOST=${RSYNCHOST:-$2}
+    RSYNCHOST=$2
     PROJECTNAME=$(basename $SRCDIR)
     export TGTDIR=${3:-"$PROJECTNAME-$DATE"}
 
