@@ -32,8 +32,7 @@ if [ "$only_resync" = "false" ]; then
 
   make USE_MIRROR=none mirror
   sudo rsync $LOCAL_MIRROR/* /var/www/fwm/$mirror/ -r -t -v $extra
-  #change permissions for packages of current user
-  sudo chown -R $(id -un):$(id -gn) /var/www/fwm/$mirror/
+
 fi
 
 ls /var/www/fwm/$mirror/centos/os/x86_64/repodata/
@@ -52,6 +51,9 @@ RSYNCROOT=fwm
 FILESROOT=fwm/files
 
 SRCDIR=/var/www/fwm/$mirror
+
+#change permissions for packages of current user
+sudo chown -R $(id -un):$(id -gn) $SRCDIR
 
 RSYNCHOST=osci-mirror-kha.kha.mirantis.net
 rsync_transfer $SRCDIR $RSYNCHOST || mirrors_fail+=" kha"
