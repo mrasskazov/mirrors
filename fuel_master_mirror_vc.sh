@@ -55,20 +55,20 @@ SRCDIR=/var/www/fwm/$mirror
 #change permissions for packages of current user
 sudo chown -R $(id -un):$(id -gn) $SRCDIR
 
-RSYNCHOST=osci-mirror-kha.kha.mirantis.net
-rsync_transfer $SRCDIR $RSYNCHOST || mirrors_fail+=" kha"
-RSYNCHOST=osci-mirror-msk.msk.mirantis.net
-rsync_transfer $SRCDIR $RSYNCHOST || mirrors_fail+=" msk"
-RSYNCHOST=osci-mirror-srt.srt.mirantis.net
-rsync_transfer $SRCDIR $RSYNCHOST || mirrors_fail+=" srt"
-RSYNCHOST=seed-us1.fuel-infra.org
-rsync_transfer $SRCDIR $RSYNCHOST || mirrors_fail+=" usa_seed"
-RSYNCHOST=seed-cz1.fuel-infra.org
-rsync_transfer $SRCDIR $RSYNCHOST || mirrors_fail+=" cz_seed"
+RSYNCHOST_KHA=osci-mirror-kha.kha.mirantis.net
+rsync_transfer $SRCDIR $RSYNCHOST_KHA || mirrors_fail+=" kha"
+RSYNCHOST_MSK=osci-mirror-msk.msk.mirantis.net
+rsync_transfer $SRCDIR $RSYNCHOST_MSK || mirrors_fail+=" msk"
+RSYNCHOST_SRT=osci-mirror-srt.srt.mirantis.net
+rsync_transfer $SRCDIR $RSYNCHOST_SRT || mirrors_fail+=" srt"
+RSYNCHOST_US=seed-us1.fuel-infra.org
+rsync_transfer $SRCDIR $RSYNCHOST_US || mirrors_fail+=" us_seed"
+RSYNCHOST_CZ=seed-cz1.fuel-infra.org
+rsync_transfer $SRCDIR $RSYNCHOST_CZ || mirrors_fail+=" cz_seed"
 #workaround for old servers
 RSYNCUSER=ostf-mirror
-RSYNCHOST=fuel-repository.vm.mirantis.net
-rsync_transfer $SRCDIR $RSYNCHOST || mirrors_fail+=" usa_ext"
+RSYNCHOST_USA=fuel-repository.vm.mirantis.net
+rsync_transfer $SRCDIR $RSYNCHOST_USA || mirrors_fail+=" usa_ext"
 
 
 #rsync /var/www/fwm/$mirror/* ss0078.svwh.net:/var/www/fwm/$mirror/ -r -t -v $extra || mirrors_fail+=" us"
@@ -80,10 +80,10 @@ if [[ -n "$mirrors_fail" ]]; then
   exit 1
 else
   export MIRROR_VERSION="${TGTDIR}"
-  export MIRROR_BASE="http://fuel-mirror.msk.mirantis.net/fwm/files/${MIRROR_VERSION}"
+  export MIRROR_BASE="http://$RSYNCHOST_MSK/fwm/files/${MIRROR_VERSION}"
   echo "MIRROR = ${mirror}" > ${WORKSPACE:-"."}/mirror_staging.txt
   echo "MIRROR_VERSION = ${MIRROR_VERSION}" >> ${WORKSPACE:-"."}/mirror_staging.txt
-  echo "MIRROR_BASE = http://fuel-mirror.msk.mirantis.net/fwm/files/${MIRROR_VERSION}" >> ${WORKSPACE:-"."}/mirror_staging.txt
+  echo "MIRROR_BASE = $MIRROR_BASE" >> ${WORKSPACE:-"."}/mirror_staging.txt
   echo "FUEL_MAIN_BRANCH = ${FUEL_MAIN_BRANCH}" >> ${WORKSPACE:-"."}/mirror_staging.txt
-  echo 'Updated: '${MIRROR_VERSION}'<br> <a href="http://fuel-repository.mirantis.com//'$FILESROOT'/'$TGTDIR'">'usa_ext'</a> <a href="http://fuel-mirror.msk.mirantis.net/'$FILESROOT'/'$TGTDIR'">'msk'</a> <a href="http://fuel-mirror.srt.mirantis.net/'$FILESROOT'/'$TGTDIR'">'srt'</a> <a href="http://fuel-mirror.kha.mirantis.net/'$FILESROOT'/'$TGTDIR'">'kha'</a>'
+  echo 'Updated: '${MIRROR_VERSION}'<br> <a href="mirror.fuel-infra.org//'$FILESROOT'/'$TGTDIR'">'ext'</a> <a href="http://$RSYNCHOST_MSK/'$FILESROOT'/'$TGTDIR'">'msk'</a> <a href="http://$RSYNCHOST_SRT/'$FILESROOT'/'$TGTDIR'">'srt'</a> <a href="http://$RSYNCHOST_KHA/'$FILESROOT'/'$TGTDIR'">'kha'</a>'
 fi
