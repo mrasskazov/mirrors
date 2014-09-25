@@ -61,12 +61,14 @@ RSYNCHOST=osci-mirror-msk.msk.mirantis.net
 rsync_transfer $SRCDIR $RSYNCHOST || mirrors_fail+=" msk"
 RSYNCHOST=osci-mirror-srt.srt.mirantis.net
 rsync_transfer $SRCDIR $RSYNCHOST || mirrors_fail+=" srt"
-RSYNCHOST=fuel-repository.vm.mirantis.net
-rsync_transfer $SRCDIR $RSYNCHOST || mirrors_fail+=" usa_ext"
 RSYNCHOST=seed-us1.fuel-infra.org
 rsync_transfer $SRCDIR $RSYNCHOST || mirrors_fail+=" usa_seed"
 RSYNCHOST=seed-cz1.fuel-infra.org
 rsync_transfer $SRCDIR $RSYNCHOST || mirrors_fail+=" cz_seed"
+#workaround for old servers
+RSYNCUSER=ostf-mirror
+RSYNCHOST=fuel-repository.vm.mirantis.net
+rsync_transfer $SRCDIR $RSYNCHOST || mirrors_fail+=" usa_ext"
 
 
 #rsync /var/www/fwm/$mirror/* ss0078.svwh.net:/var/www/fwm/$mirror/ -r -t -v $extra || mirrors_fail+=" us"
