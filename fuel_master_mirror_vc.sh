@@ -63,10 +63,7 @@ RSYNCHOST_US=seed-us1.fuel-infra.org
 rsync_transfer $SRCDIR $RSYNCHOST_US || mirrors_fail+=" us_seed"
 RSYNCHOST_CZ=seed-cz1.fuel-infra.org
 rsync_transfer $SRCDIR $RSYNCHOST_CZ || mirrors_fail+=" cz_seed"
-#workaround for old servers
-RSYNCUSER=ostf-mirror
-RSYNCHOST_USA=fuel-repository.vm.mirantis.net
-rsync_transfer $SRCDIR $RSYNCHOST_USA || mirrors_fail+=" usa_ext"
+
 
 if [[ -n "$mirrors_fail" ]]; then
   echo Some mirrors failed to update: $mirrors_fail
