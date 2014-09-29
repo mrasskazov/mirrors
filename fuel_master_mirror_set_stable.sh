@@ -11,7 +11,7 @@ source $TOP_DIR/rsync_functions.sh
 SYMLINK_FILE=$(get_symlink "files/$STABLE_VERSION")
 STABLE_SYMLINK_FILE=$(get_symlink "$STABLE_VERSION")
 
-RSYNCUSER=ostf-mirror
+RSYNCUSER=mirror-sync
 RSYNCROOT=fwm
 FILESROOT=fwm/files
 
@@ -43,6 +43,6 @@ if [[ -n "$mirrors_fail" ]]; then
   rm $WORKSPACE/build_description.txt
   exit 1
 else
-  echo ${STABLE_VERSION}' is stable.<br> <a href="http://fuel-repository.mirantis.com//'$FILESROOT'/'$STABLE_VERSION'">'usa_ext'</a> <a href="http://fuel-mirror.msk.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'msk'</a> <a href="http://fuel-mirror.srt.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'srt'</a> <a href="http://fuel-mirror.kha.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'kha'</a>'
-  echo ${STABLE_VERSION}' is stable.<br> <a href="http://fuel-repository.mirantis.com//'$FILESROOT'/'$STABLE_VERSION'">'usa_ext'</a> <a href="http://fuel-mirror.msk.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'msk'</a> <a href="http://fuel-mirror.srt.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'srt'</a> <a href="http://fuel-mirror.kha.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'kha'</a>' > $WORKSPACE/build_description.txt
+  echo ${STABLE_VERSION}' is stable.<br> <a href="http://mirror.fuel-infra.org//'$FILESROOT'/'$STABLE_VERSION'">'usa_ext'</a> <a href="http://osci-mirror-msk.msk.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'msk'</a> <a href="http://osci-mirror-srt.srt.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'srt'</a> <a href="http://osci-mirror-kha.kha.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'kha'</a>'
+  echo ${STABLE_VERSION}' is stable.<br> <a href="http://mirror.fuel-infra.org//'$FILESROOT'/'$STABLE_VERSION'">'usa_ext'</a> <a href="http://osci-mirror-msk.msk.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'msk'</a> <a href="http://osci-mirror-srt.srt.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'srt'</a> <a href="http://osci-mirror-kha.kha.mirantis.net/'$FILESROOT'/'$STABLE_VERSION'">'kha'</a>' > $WORKSPACE/build_description.txt
 fi
