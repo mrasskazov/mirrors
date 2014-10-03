@@ -12,6 +12,11 @@ export LANG=C
 
 export FUEL_MAIN_BRANCH=${FUEL_MAIN_BRANCH:-master}
 export mirror=${mirror:-$(awk -F '[:=?]' '/^PRODUCT_VERSION\>/ {print $NF}' config.mk)}
+if [ -n "$MIRROR_POSTFIX" ]; then
+    export mirror="${mirror}-${MIRROR_POSTFIX}"
+    export MIRROR_FUEL="(http://osci-obs.vm.mirantis.net:82/centos-fuel-${mirror}/centos/)"
+    export MIRROR_FUEL_UBUNTU="http://osci-obs.vm.mirantis.net:82/ubuntu-fuel-${mirror}/reprepro"
+fi
 #set docker mirror to srt
 export MIRROR_DOCKER=http://fuel-mirror.srt.mirantis.net/fwm/${mirror}/docker
 # dirty hack for first run
