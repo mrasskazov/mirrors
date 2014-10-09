@@ -20,7 +20,7 @@ fi
 #set docker mirror to srt
 export MIRROR_DOCKER=${MIRROR_DOCKER:-http://osci-mirror-srt.srt.mirantis.net/fwm/${mirror}/docker}
 # dirty hack for first run
-wget -o - $MIRROR_DOCKER || export MIRROR_DOCKER=http://osci-mirror-srt.srt.mirantis.net/fwm/5.1/docker
+wget -qO /dev/null $MIRROR_DOCKER || export MIRROR_DOCKER=http://osci-mirror-srt.srt.mirantis.net/fwm/5.1/docker
 
 extra="$extra --del"
 
