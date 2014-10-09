@@ -18,9 +18,9 @@ if [ -n "$MIRROR_POSTFIX" ]; then
     export MIRROR_FUEL_UBUNTU="http://osci-obs.vm.mirantis.net:82/ubuntu-fuel-${mirror}/reprepro"
 fi
 #set docker mirror to srt
-export MIRROR_DOCKER=http://fuel-mirror.srt.mirantis.net/fwm/${mirror}/docker
+export MIRROR_DOCKER=${MIRROR_DOCKER:-http://osci-mirror-srt.srt.mirantis.net/fwm/${mirror}/docker}
 # dirty hack for first run
-wget -o - $MIRROR_DOCKER || export MIRROR_DOCKER=http://fuel-mirror.srt.mirantis.net/fwm/5.1/docker
+wget -o - $MIRROR_DOCKER || export MIRROR_DOCKER=http://osci-mirror-srt.srt.mirantis.net/fwm/5.1/docker
 
 extra="$extra --del"
 
