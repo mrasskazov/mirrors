@@ -1,0 +1,158 @@
+# vi:syntax=sh 
+add_prefix_to_output() {
+    local prefix="$1"
+    if [ -z "$prefix" ]; then
+        exec cat
+    else
+        while read line; do
+            echo "$prefix$line"
+        done
+    fi
+}
+
+setup_prefixes() {
+    local prefix="$1"
+    exec > >(set +x; add_prefix_to_output "$prefix: ") 2> >(set +x; add_prefix_to_output "$prefix! " >&2)
+}
+
+if [ "$output_prefix" ]; then
+    setup_prefixes "$output_prefix"
+fi
+
+init_repo() {
+    local repo="${1:-$PWD/tmp-repo}"
+    if [ ! -d $repo ]; then
+        git init --bare "$repo"
+    fi
+    export GIT_DIR="$repo"
+}
+
+ALL_PROJECTS=" cinder  glance  horizon  keystone  nova  quantum  neutron  swift  tempest  heat  ceilometer "
+ALL_PROJECTS="$ALL_PROJECTS oslo  oslo-incubator  oslo.config  oslo.db  oslo.i18n  oslo.messaging  oslo.rootwrap  oslo.utils  oslo.version  oslo.vmware  oslosphinx  oslotest  oslo.serialization  oslo.middleware  oslo.log  oslo.concurrency "
+ALL_PROJECTS="$ALL_PROJECTS glance_store "
+ALL_PROJECTS="$ALL_PROJECTS ironic  designate  trove  barbican "
+ALL_PROJECTS="$ALL_PROJECTS savanna  savanna-dashboard  savanna-extra  savanna-image-elements "
+ALL_PROJECTS="$ALL_PROJECTS sahara  sahara-dashboard  sahara-extra  sahara-image-elements "
+ALL_PROJECTS="$ALL_PROJECTS murano  murano-api  murano-dashboard "
+ALL_PROJECTS="$ALL_PROJECTS fuel-library  fuel-web  fuel-main  fuel-ostf  fuel-docs  fuel-devops  fuel-astute  fuel-provision "
+ALL_PROJECTS="$ALL_PROJECTS mistral  mistral-dashboard  mistral-extra "
+ALL_CLIENT_PROJECTS="cinder glance keystone nova quantum neutron swift heat ceilometer savanna sahara murano designate ironic trove barbican mistral"
+PROJECTS=""
+GITHUB_REMOTE_oslo="git://github.com/openstack/oslo-incubator.git"
+STACKFORGE_PROJECTS="murano murano-api murano-dashboard python-muranoclient fuel-library fuel-web fuel-main fuel-ostf fuel-docs fuel-devops fuel-astute fuel-provision mistral mistral-dashboard mistral-extra python-mistralclient"
+
+for _prj in $STACKFORGE_PROJECTS; do
+    declare GITHUB_REMOTE_${_prj//-/_}="git://github.com/stackforge/$_prj.git"
+done
+
+_clean_but() {
+    if [ "$1" == 'but' ]; then
+        shift
+        for prj; do
+            PROJECTS=${PROJECTS/ $prj /}
+        done
+    fi
+}
+
+add_all_projects() {
+    PROJECTS="$PROJECTS $ALL_PROJECTS"
+    local prj
+    for prj in $ALL_CLIENT_PROJECTS; do
+        PROJECTS="$PROJECTS python-${prj}client "
+    done
+    _clean_but $@
+}
+
+add_client_projects() {
+    local prj
+    for prj in $ALL_CLIENT_PROJECTS; do
+        PROJECTS="$PROJECTS python-${prj}client "
+    done
+    _clean_but $@
+}
+
+add_nonclient_projects() {
+    PROJECTS="$PROJECTS $ALL_PROJECTS"
+    _clean_but $@
+}
+
+REMOTE_CLEANUP=""
+
+add_remote() {
+    local name=$1
+    local url=$2
+    if git remote | grep "$name" > /dev/null; then
+        git remote set-url "$name" "$url"
+    else
+        git remote add "$name" "$url"
+    fi
+}
+
+cleanup_remotes() {
+    for name in $REMOTE_CLEANUP; do
+    if git remote | grep "$name" > /dev/null; then
+        git remote rm "$name"
+    fi
+    done
+}
+
+add_mirantis_remote() {
+    local prj=${1:-$prj}
+    if [ -z "$prj" ]; then
+        echo "$$prj or positional arg expected" >&2
+    fi
+    local remote_var=MIRANTIS_REMOTE_${prj//-/_}
+    if [ -z "${!remote_var}" ]; then
+        url="ssh://${MIRANTIS_USERNAME:+$MIRANTIS_USERNAME@}${GERRIT_HOST}:29418/openstack/$prj.git"
+    else
+        url="${!remote_var}"
+    fi
+    add_remote mirantis-$prj "$url"
+}
+
+add_github_remote() {
+    local prj=${1:-$prj}
+    if [ -z "$prj" ]; then
+        echo "$$prj or positional arg expected" >&2
+    fi
+    local remote_var=GITHUB_REMOTE_${prj//-/_}
+    if [ -z "${!remote_var}" ]; then
+        url="git://github.com/openstack/${prj}.git"
+    else
+        url="${!remote_var}"
+    fi
+    add_remote github-$prj "$url"
+}
+
+cleanup_tags() {
+    find ${GIT_DIR:-.git}/refs/tags -mindepth 1 -delete
+}
+
+cleanup_all() {
+    cleanup_tags
+    cleanup_remotes
+}
+
+commit_gitreview() {
+    local branch=$1
+    local prj=${3:-$prj}
+    local onto=${2:-mirantis-$prj/$branch}
+    local blob_id tree_id commit_id onto_commit onto_tree old_tree
+    onto_commit=$(git rev-parse $onto^{commit})
+    onto_tree=$(git rev-parse $onto^{tree})
+    blob_id=$(git hash-object -w --stdin <<END
+[gerrit]
+host=${GERRIT_HOST}
+project=openstack/${prj}.git
+defaultremote=fuel-infra
+defaultbranch=$branch
+END
+)
+    old_tree=$(git write-tree)
+    git read-tree $onto_tree
+    git update-index --add --cacheinfo 100644 $blob_id .gitreview
+    tree_id=$(git write-tree)
+    commit_id=$(git commit-tree -p $onto_commit -m "Set .gitreview to Mirantis Gerrit" $tree_id)
+    git read-tree $old_tree
+    echo $commit_id
+}
