@@ -34,6 +34,7 @@ if [ "$only_resync" = "false" ]; then
   done
 
   make USE_MIRROR=none mirror
+  sudo mkdir -p /var/www/fwm/$mirror
   sudo rsync $LOCAL_MIRROR/* /var/www/fwm/$mirror/ -r -t -v $extra
 
 fi
