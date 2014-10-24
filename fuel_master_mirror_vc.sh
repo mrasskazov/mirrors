@@ -26,6 +26,8 @@ extra="$extra --del"
 
 only_resync=${only_resync:-false}
 
+SRCDIR=${SRCDIR:-/var/www/fwm/$mirror}
+
 if [ "$only_resync" = "false" ]; then
   make deep_clean
 
@@ -34,15 +36,15 @@ if [ "$only_resync" = "false" ]; then
   done
 
   make USE_MIRROR=none mirror
-  sudo mkdir -p /var/www/fwm/$mirror
-  sudo rsync $LOCAL_MIRROR/* /var/www/fwm/$mirror/ -r -t -v $extra
+  sudo mkdir -p ${SRCDIR}
+  sudo rsync $LOCAL_MIRROR/* ${SRCDIR}/ -r -t -v $extra
 
 fi
 
-ls /var/www/fwm/$mirror/centos/os/x86_64/repodata/
-ls /var/www/fwm/$mirror/centos/os/x86_64/
+ls ${SRCDIR}/centos/os/x86_64/repodata/
+ls ${SRCDIR}/centos/os/x86_64/
 
-sudo createrepo -g /var/www/fwm/$mirror/centos/os/x86_64/comps.xml -o /var/www/fwm/$mirror/centos/os/x86_64 /var/www/fwm/$mirror/centos/os/x86_64
+sudo createrepo -g ${SRCDIR}/centos/os/x86_64/comps.xml -o ${SRCDIR}/centos/os/x86_64 ${SRCDIR}/centos/os/x86_64
 
 mirrors_fail=""
 
@@ -52,7 +54,6 @@ RSYNCUSER=mirror-sync
 RSYNCROOT=fwm
 FILESROOT=fwm/files
 
-SRCDIR=/var/www/fwm/$mirror
 
 #change permissions for packages of current user
 sudo chown -R $(id -un):$(id -gn) $SRCDIR
