@@ -59,6 +59,12 @@ ENDRELEASE
             gpg --export -a product@mirantis.com > $LATEST/product.mirantis.com.gpg.key
         }
         ;;
+    "elasticsearch")
+        export SRC="/media/mirrors/mirror_update/mirror/packages.elasticsearch.org/elasticsearch/1.3"
+        function pre_download() {
+            apt-mirror || fatal "apt-mirror failed"
+        }
+        ;;
     *)
         fatal "Wrong source mirror '$SRC_MIRR'"
 esac
