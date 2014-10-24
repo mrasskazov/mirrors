@@ -64,6 +64,7 @@ ENDRELEASE
 esac
 
 job_lock set
+pre_download
 via_$SYNCTYPE
 clear_old_versions
 job_lock unset

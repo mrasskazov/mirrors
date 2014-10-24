@@ -15,6 +15,10 @@ export DST_DIR=$DST/files/$REPO
 export LATEST=$DST/files/$SRC_MIRR-latest
 
 
+function pre_download() {
+    return 0
+}
+
 function past_download() {
     return 0
 }
