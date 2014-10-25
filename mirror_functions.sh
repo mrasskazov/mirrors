@@ -25,20 +25,18 @@ function past_download() {
 
 function job_lock() {
     LOCKFILE=/tmp/${SRC_MIRR}_updates
+    fd=15
+    eval "exec $fd>$LOCKFILE"
     if [ "$1" = "set" ]; then
-        if [ -f $LOCKFILE ]; then
-            echo "Updates via rsync already running."
-            exit 0
-        fi
-        echo "$SRC" > $LOCKFILE
+        flock -x -n $fd \
+            || fatal "Updates for ${SRC_MIRR} already running. Lockfile: $LOCKFILE, PID=$(cat $LOCKFILE)"
     elif [ "$1" = "unset" ]; then
-        rm -f $LOCKFILE
+        flock -u $fd
     fi
 }
 
 function fatal() {
   echo "$@"
-  rm -f /tmp/${SRC_MIRR}_updates
   rm -rf $DST_TMP
   exit 1
 }
@@ -95,7 +93,7 @@ function via_wget() {
          $EXCLUDE \
          --no-host-directories \
          --directory-prefix=$DST_TMP \
-         -i $LOCKFILE \
+         $SRC \
     && success \
     || fatal "wget failed"
 }
