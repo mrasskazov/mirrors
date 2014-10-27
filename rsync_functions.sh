@@ -77,23 +77,19 @@ function clear_old_versions() {
 function job_lock() {
     local LOCKFILE=/tmp/$1
     shift
+    fd=15
+    eval "exec $fd>$LOCKFILE"
     if [ "$1" = "set" ]; then
-        if [ -f $LOCKFILE ]; then
-            echo "Updates via rsync already running ($LOCKFILE)."
-            exit 1
-        fi
-        echo "$SRC" > $LOCKFILE
+        flock -x -n $fd \
+            || fatal "Rebuilding of mirrors for ${1} already running. Lockfile: $LOCKFILE, PID=$(cat $LOCKFILE)"
     elif [ "$1" = "unset" ]; then
-        rm -f $LOCKFILE
+        flock -u $fd
     fi
 }
 
 function fatal() {
-    local LOCKNAME=$1
-    shift
     echo "$@"
     rsync_delete_dir $TGTDIR
-    job_lock $LOCKNAME unset
     exit 1
 }
 
@@ -103,8 +99,7 @@ function success() {
     rsync_delete_file $PROJECTNAME-staging \
         && rsync -l $(get_symlink $TGTDIR) $RSYNCHOST::$RSYNCUSER/$FILESROOT/$PROJECTNAME-staging \
         && echo 'Synced to: <a href="http://'$RSYNCHOST'/'$FILESROOT'/'$TGTDIR'">'$TGTDIR'</a>' \
-        && clear_old_versions \
-        && job_lock $LOCKNAME unset
+        && clear_old_versions
 }
 
 ######################################################
@@ -117,9 +112,7 @@ function rsync_transfer() {
     OPTIONS="--verbose --force --ignore-errors --delete-excluded --exclude-from=$EXCLUDES
           --delete --link-dest=/$FILESROOT/$PROJECTNAME-staging -a"
 
-    LOCKFILE=$PROJECTNAME.lock
-    job_lock $LOCKFILE set
     rsync $OPTIONS $SRCDIR/ $RSYNCHOST::$RSYNCUSER/$FILESROOT/$TGTDIR \
         && success $LOCKFILE \
-        || fatal $LOCKFILE "sync failed"
+        || fatal "sync failed"
 }
