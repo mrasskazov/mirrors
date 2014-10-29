@@ -10,6 +10,10 @@ export LOCAL_MIRROR=../tmp/$(basename $(pwd))/local_mirror
 
 export LANG=C
 
+SRCDIR=${SRCDIR:-/var/www/fwm/$mirror}
+source $TOP_DIR/rsync_functions.sh
+job_lock ${mirror}.lock set
+
 export FUEL_MAIN_BRANCH=${FUEL_MAIN_BRANCH:-master}
 export mirror=${mirror:-$(awk -F '[:=?]' '/^PRODUCT_VERSION\>/ {print $NF}' config.mk)}
 if [ -n "$MIRROR_POSTFIX" ]; then
@@ -25,8 +29,6 @@ wget -qO /dev/null $MIRROR_DOCKER || export MIRROR_DOCKER=http://osci-mirror-srt
 extra="$extra --del"
 
 only_resync=${only_resync:-false}
-
-SRCDIR=${SRCDIR:-/var/www/fwm/$mirror}
 
 if [ "$only_resync" = "false" ]; then
   make deep_clean
@@ -48,12 +50,9 @@ sudo createrepo -g ${SRCDIR}/centos/os/x86_64/comps.xml -o ${SRCDIR}/centos/os/x
 
 mirrors_fail=""
 
-source $TOP_DIR/rsync_functions.sh
-
 RSYNCUSER=mirror-sync
 RSYNCROOT=fwm
 FILESROOT=fwm/files
-
 
 #change permissions for packages of current user
 sudo chown -R $(id -un):$(id -gn) $SRCDIR
@@ -68,7 +67,6 @@ RSYNCHOST_US=seed-us1.fuel-infra.org
 rsync_transfer $SRCDIR $RSYNCHOST_US || mirrors_fail+=" us_seed"
 RSYNCHOST_CZ=seed-cz1.fuel-infra.org
 rsync_transfer $SRCDIR $RSYNCHOST_CZ || mirrors_fail+=" cz_seed"
-
 
 if [[ -n "$mirrors_fail" ]]; then
   echo Some mirrors failed to update: $mirrors_fail
