@@ -109,8 +109,8 @@ function rsync_transfer() {
     PROJECTNAME=$(basename $SRCDIR)
     export TGTDIR=${3:-"$PROJECTNAME-$DATE"}
 
-    OPTIONS="--verbose --force --ignore-errors --delete-excluded --exclude-from=$EXCLUDES
-          --delete --link-dest=/$FILESROOT/$PROJECTNAME-staging -a"
+    OPTIONS="--verbose --force --ignore-errors --delete-excluded
+          ${RSYNC_EXTRA_PARAMS} --delete --link-dest=/$FILESROOT/$PROJECTNAME-staging -a"
 
     rsync $OPTIONS $SRCDIR/ $RSYNCHOST::$RSYNCUSER/$FILESROOT/$TGTDIR \
         && success $LOCKFILE \
