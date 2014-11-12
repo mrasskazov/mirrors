@@ -82,16 +82,17 @@ function job_lock() {
     case $1 in
         "set")
             flock -x -n $fd \
-                || fatal "Process already running. Lockfile: $LOCKFILE, PID=$(cat $LOCKFILE)"
+                || fatal "Process already running. Lockfile: $LOCKFILE"
             ;;
         "unset")
             flock -u $fd
             ;;
         "wait")
             TIMEOUT=${2:-3600}
-            echo "Waiting of concurrent process (lockfile: $LOCKFILE, PID=$(cat $LOCKFILE), timeout=$TIMEOUT seconds) ..."
+            echo "Waiting of concurrent process (lockfile: $LOCKFILE, timeout = $TIMEOUT seconds) ..."
             flock -x -w $TIMEOUT $fd \
-                || fatal "Timeout error (lockfile: $LOCKFILE, PID=$(cat $LOCKFILE))"
+                && echo DONE \
+                || error_message "Timeout error (lockfile: $LOCKFILE)"
             ;;
     esac
 }
@@ -99,6 +100,11 @@ function job_lock() {
 function fatal() {
     echo "$@"
     rsync_delete_dir $TGTDIR
+    exit 1
+}
+
+function error_message() {
+    echo "$@"
     exit 1
 }
 
