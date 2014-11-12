@@ -79,12 +79,21 @@ function job_lock() {
     shift
     fd=15
     eval "exec $fd>$LOCKFILE"
-    if [ "$1" = "set" ]; then
-        flock -x -n $fd \
-            || fatal "Rebuilding of mirrors for ${1} already running. Lockfile: $LOCKFILE, PID=$(cat $LOCKFILE)"
-    elif [ "$1" = "unset" ]; then
-        flock -u $fd
-    fi
+    case $1 in
+        "set")
+            flock -x -n $fd \
+                || fatal "Process already running. Lockfile: $LOCKFILE, PID=$(cat $LOCKFILE)"
+            ;;
+        "unset")
+            flock -u $fd
+            ;;
+        "wait")
+            TIMEOUT=${2:-3600}
+            echo "Waiting of concurrent process (lockfile: $LOCKFILE, PID=$(cat $LOCKFILE), timeout=$TIMEOUT seconds) ..."
+            flock -x -w $TIMEOUT $fd \
+                || fatal "Timeout error (lockfile: $LOCKFILE, PID=$(cat $LOCKFILE))"
+            ;;
+    esac
 }
 
 function fatal() {
