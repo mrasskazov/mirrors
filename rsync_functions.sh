@@ -82,7 +82,7 @@ function job_lock() {
     case $1 in
         "set")
             flock -x -n $fd \
-                || fatal "Process already running. Lockfile: $LOCKFILE"
+                || error_message "Process already running. Lockfile: $LOCKFILE"
             ;;
         "unset")
             flock -u $fd
