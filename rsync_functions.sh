@@ -121,11 +121,11 @@ function success() {
 function rsync_transfer() {
     SRCDIR=$1
     RSYNCHOST=$2
-    PROJECTNAME=$(basename $SRCDIR)
+    PROJECTNAME=$mirror
     export TGTDIR=${3:-"$PROJECTNAME-$DATE"}
 
-    OPTIONS="--verbose --force --ignore-errors --delete-excluded
-          ${RSYNC_EXTRA_PARAMS} --delete --link-dest=/$FILESROOT/$PROJECTNAME-staging -a"
+    OPTIONS="--archive --verbose --force --ignore-errors --delete-excluded --no-owner --no-group
+          ${RSYNC_EXTRA_PARAMS} --delete --link-dest=/$FILESROOT/$PROJECTNAME-staging"
 
     rsync $OPTIONS $SRCDIR/ $RSYNCHOST::$RSYNCUSER/$FILESROOT/$TGTDIR \
         && success $LOCKFILE \

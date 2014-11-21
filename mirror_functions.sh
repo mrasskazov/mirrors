@@ -75,6 +75,8 @@ function via_rsync() {
           --xattrs \
           --link-dest=$LATEST \
           --sparse \
+          --no-owner \
+          --no-group \
           $EXCLUDE \
           $SRC \
           $DST_TMP \
