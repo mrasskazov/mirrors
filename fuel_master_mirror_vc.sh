@@ -10,7 +10,7 @@ export LOCAL_MIRROR=../tmp/$(basename $(pwd))/local_mirror
 
 export LANG=C
 
-SRCDIR=${SRCDIR:-$LOCAL_MIRROR}
+SRCDIR=${SRCDIR:-/var/www/fwm/$mirror}
 source $TOP_DIR/rsync_functions.sh
 job_lock ${mirror}.lock set
 
@@ -38,17 +38,24 @@ if [ "$only_resync" = "false" ]; then
   done
 
   make USE_MIRROR=none mirror
+  sudo mkdir -p ${SRCDIR}
+  sudo rsync $LOCAL_MIRROR/* ${SRCDIR}/ -r -t -v $extra
 
 fi
 
 ls ${SRCDIR}/centos/os/x86_64/repodata/
 ls ${SRCDIR}/centos/os/x86_64/
 
+sudo createrepo -g ${SRCDIR}/centos/os/x86_64/comps.xml -o ${SRCDIR}/centos/os/x86_64 ${SRCDIR}/centos/os/x86_64
+
 mirrors_fail=""
 
 RSYNCUSER=mirror-sync
 RSYNCROOT=fwm
 FILESROOT=fwm/files
+
+#change permissions for packages of current user
+sudo chown -R $(id -un):$(id -gn) $SRCDIR
 
 RSYNCHOST_KHA=osci-mirror-kha.kha.mirantis.net
 rsync_transfer $SRCDIR $RSYNCHOST_KHA || mirrors_fail+=" kha"
