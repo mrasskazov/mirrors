@@ -121,7 +121,7 @@ function success() {
 function rsync_transfer() {
     SRCDIR=$1
     RSYNCHOST=$2
-    PROJECTNAME=$mirror
+    PROJECTNAME=${PROJECTNAME:-$mirror}
     export TGTDIR=${3:-"$PROJECTNAME-$DATE"}
 
     OPTIONS="--archive --verbose --force --ignore-errors --delete-excluded --no-owner --no-group
