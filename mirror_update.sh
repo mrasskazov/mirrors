@@ -4,6 +4,7 @@ export SRC_MIRR=${1:-Unknown}
 
 TOP_DIR=$(cd $(dirname "$0") && pwd)
 source $TOP_DIR/mirror_functions.sh
+source $TOP_DIR/functions/locking.sh
 
 case "$SRC_MIRR" in
     "ubuntu")
@@ -69,8 +70,7 @@ ENDRELEASE
         fatal "Wrong source mirror '$SRC_MIRR'"
 esac
 
-job_lock set
+job_lock /tmp/${SRC_MIRR}_updates set
 pre_download
 via_$SYNCTYPE
 clear_old_versions
-job_lock unset

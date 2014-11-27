@@ -12,6 +12,7 @@ export LANG=C
 
 SRCDIR=${SRCDIR:-$LOCAL_MIRROR}
 source $TOP_DIR/rsync_functions.sh
+source $TOP_DIR/functions/locking.sh
 job_lock ${mirror}.lock set
 
 export FUEL_MAIN_BRANCH=${FUEL_MAIN_BRANCH:-master}

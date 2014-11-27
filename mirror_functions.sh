@@ -2,7 +2,6 @@
 
 export LANG=C
 export SYNCTYPE=rsync
-
 export SAVE_LAST_DAYS=${2:-61}
 
 export DATE=$(date "+%Y-%m-%d-%H%M%S")
@@ -21,18 +20,6 @@ function pre_download() {
 
 function past_download() {
     return 0
-}
-
-function job_lock() {
-    LOCKFILE=/tmp/${SRC_MIRR}_updates
-    fd=15
-    eval "exec $fd>$LOCKFILE"
-    if [ "$1" = "set" ]; then
-        flock -x -n $fd \
-            || fatal "Updates for ${SRC_MIRR} already running. Lockfile: $LOCKFILE, PID=$(cat $LOCKFILE)"
-    elif [ "$1" = "unset" ]; then
-        flock -u $fd
-    fi
 }
 
 function fatal() {

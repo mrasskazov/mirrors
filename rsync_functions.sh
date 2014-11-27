@@ -74,37 +74,9 @@ function clear_old_versions() {
 }
 
 ######################################################
-function job_lock() {
-    local LOCKFILE=/tmp/$1
-    shift
-    fd=15
-    eval "exec $fd>$LOCKFILE"
-    case $1 in
-        "set")
-            flock -x -n $fd \
-                || error_message "Process already running. Lockfile: $LOCKFILE"
-            ;;
-        "unset")
-            flock -u $fd
-            ;;
-        "wait")
-            TIMEOUT=${2:-3600}
-            echo "Waiting of concurrent process (lockfile: $LOCKFILE, timeout = $TIMEOUT seconds) ..."
-            flock -x -w $TIMEOUT $fd \
-                && echo DONE \
-                || error_message "Timeout error (lockfile: $LOCKFILE)"
-            ;;
-    esac
-}
-
 function fatal() {
     echo "$@"
     rsync_delete_dir $TGTDIR
-    exit 1
-}
-
-function error_message() {
-    echo "$@"
     exit 1
 }
 
