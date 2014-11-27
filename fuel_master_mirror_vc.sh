@@ -13,10 +13,12 @@ export LANG=C
 SRCDIR=${SRCDIR:-$LOCAL_MIRROR}
 source $TOP_DIR/rsync_functions.sh
 source $TOP_DIR/functions/locking.sh
-job_lock ${mirror}.lock set
 
 export FUEL_MAIN_BRANCH=${FUEL_MAIN_BRANCH:-master}
+
 export mirror=${mirror:-$(awk -F '[:=?]' '/^PRODUCT_VERSION\>/ {print $NF}' config.mk)}
+job_lock ${mirror}.lock set
+
 if [ -n "$MIRROR_POSTFIX" ]; then
     export mirror="${mirror}-${MIRROR_POSTFIX}"
     export MIRROR_FUEL="http://osci-obs.vm.mirantis.net:82/centos-fuel-${mirror}/centos/"
