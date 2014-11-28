@@ -16,6 +16,10 @@ source $TOP_DIR/functions/locking.sh
 
 export FUEL_MAIN_BRANCH=${FUEL_MAIN_BRANCH:-master}
 
+for commit in $extra_commits; do
+    git fetch https://review.openstack.org/stackforge/fuel-main $commit && git cherry-pick FETCH_HEAD
+done
+
 export mirror=${mirror:-$(awk -F '[:=?]' '/^PRODUCT_VERSION\>/ {print $NF}' config.mk)}
 job_lock ${mirror}.lock set
 
@@ -35,13 +39,7 @@ only_resync=${only_resync:-false}
 
 if [ "$only_resync" = "false" ]; then
   make deep_clean
-
-  for commit in $extra_commits; do
-    git fetch https://review.openstack.org/stackforge/fuel-main $commit && git cherry-pick FETCH_HEAD
-  done
-
   make USE_MIRROR=none mirror
-
 fi
 
 ls ${SRCDIR}/centos/os/x86_64/repodata/
