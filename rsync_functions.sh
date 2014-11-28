@@ -10,6 +10,7 @@ FILESROOT=fwm/files
 SRCDIR=${SRCDIR:-""}
 
 export DATE=$(date "+%Y-%m-%d-%H%M%S")
+export DATE_REGEXP='[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{6}'
 export SAVE_LAST_DAYS=${SAVE_LAST_DAYS:-61}
 export WARN_DATE=$(date "+%Y%m%d" -d "$SAVE_LAST_DAYS days ago")
 
@@ -59,7 +60,7 @@ function list_files() {
 ######################################################
 function clear_old_versions() {
     # Clear mirrors older then $SAVE_LAST_DAYS and w/o symlinks on self
-    DIRS=$(list_dirs $FILESROOT)
+    DIRS=$(list_dirs $FILESROOT | grep -E "^${PROJECTNAME}-${DATE_REGEXP}")
     for d in $DIRS; do
         #ddate=$(echo $d | awk -F '[-]' '{print $2$3$4}')
         ddate=$(echo $d | awk -F '[-]' '{print $(NF-3)$(NF-2)$(NF-1)}')
