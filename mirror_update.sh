@@ -70,7 +70,7 @@ ENDRELEASE
         fatal "Wrong source mirror '$SRC_MIRR'"
 esac
 
-job_lock /tmp/${SRC_MIRR}_updates set
+job_lock ${SRC_MIRR}_updates set
 pre_download
 via_$SYNCTYPE
 clear_old_versions
