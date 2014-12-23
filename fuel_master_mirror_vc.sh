@@ -52,15 +52,21 @@ RSYNCROOT=fwm
 FILESROOT=fwm/files
 
 RSYNCHOST_KHA=osci-mirror-kha.kha.mirantis.net
+export RSYNC_EXTRA_PARAMS="--log-file=${TOP_DIR}/sync-diff-kha.log"
 rsync_transfer $SRCDIR $RSYNCHOST_KHA || mirrors_fail+=" kha"
 RSYNCHOST_MSK=osci-mirror-msk.msk.mirantis.net
+export RSYNC_EXTRA_PARAMS="--log-file=${TOP_DIR}/sync-diff-msk.log"
 rsync_transfer $SRCDIR $RSYNCHOST_MSK || mirrors_fail+=" msk"
 RSYNCHOST_SRT=osci-mirror-srt.srt.mirantis.net
+export RSYNC_EXTRA_PARAMS="--log-file=${TOP_DIR}/sync-diff-srt.log"
 rsync_transfer $SRCDIR $RSYNCHOST_SRT || mirrors_fail+=" srt"
 RSYNCHOST_US=seed-us1.fuel-infra.org
+export RSYNC_EXTRA_PARAMS="--log-file=${TOP_DIR}/sync-diff-us1.log"
 rsync_transfer $SRCDIR $RSYNCHOST_US || mirrors_fail+=" us_seed"
 RSYNCHOST_CZ=seed-cz1.fuel-infra.org
+export RSYNC_EXTRA_PARAMS="--log-file=${TOP_DIR}/sync-diff-cz1.log"
 rsync_transfer $SRCDIR $RSYNCHOST_CZ || mirrors_fail+=" cz_seed"
+unset RSYNC_EXTRA_PARAMS
 
 if [[ -n "$mirrors_fail" ]]; then
   echo Some mirrors failed to update: $mirrors_fail
