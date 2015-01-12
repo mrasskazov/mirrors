@@ -51,6 +51,8 @@ RSYNCUSER=mirror-sync
 RSYNCROOT=fwm
 FILESROOT=fwm/files
 
+rm -f $TOP_DIR/sync-diff-*.log $TOP_DIR/pkgs-sync-diff-*.log
+
 RSYNCHOST_KHA=osci-mirror-kha.kha.mirantis.net
 export RSYNC_EXTRA_PARAMS="--log-file=${TOP_DIR}/sync-diff-kha.log"
 rsync_transfer $SRCDIR $RSYNCHOST_KHA || mirrors_fail+=" kha"
@@ -67,6 +69,11 @@ RSYNCHOST_CZ=seed-cz1.fuel-infra.org
 export RSYNC_EXTRA_PARAMS="--log-file=${TOP_DIR}/sync-diff-cz1.log"
 rsync_transfer $SRCDIR $RSYNCHOST_CZ || mirrors_fail+=" cz_seed"
 unset RSYNC_EXTRA_PARAMS
+
+for F in $TOP_DIR/sync-diff-*.log; do
+    grep -E ' <f.* (centos/os/x86_64/Packages/|ubuntu/pool/main/)' $F > $TOP_DIR/pkgs-$(basename $F) \
+        || echo "${TGTDIR}: No packages changed." > $TOP_DIR/pkgs-$(basename $F)
+done
 
 if [[ -n "$mirrors_fail" ]]; then
   echo Some mirrors failed to update: $mirrors_fail
