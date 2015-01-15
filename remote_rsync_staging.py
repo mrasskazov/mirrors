@@ -3,11 +3,15 @@
 
 
 import datetime
+import logging
 import os
 import re
 import subprocess
 import tempfile
 
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger('rsync_staging')
 
 now = datetime.datetime.utcnow()
 staging_snapshot_stamp_format = r'%Y-%m-%d-%H%M%S'
@@ -105,19 +109,21 @@ class RemoteRsyncStaging(object):
         return linkname
 
     def _shell(self, cmd, raise_error=True):
-        print cmd
+        logger.info(cmd)
         process = subprocess.Popen(cmd,
                                    stdin=subprocess.PIPE,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE,
                                    shell=True)
         out, err = process.communicate()
+        logger.debug(out)
         exitcode = process.returncode
         if process.returncode != 0 and raise_error:
             msg = '"{cmd}" failed. Exit code == {exitcode}'\
                   '\n\nSTDOUT: \n{out}'\
                   '\n\nSTDERR: \n{err}'\
                   .format(**(locals()))
+            logger.error(msg)
             raise RuntimeError(msg)
         return exitcode, out, err
 
@@ -191,7 +197,7 @@ class RemoteRsyncStaging(object):
             self._remove_old_snapshots()
             return exitcode, out, err
         except RuntimeError as e:
-            print e.message
+            logger.error(e.message)
             self.rsync_delete_dir(self.staging_dir_path)
             raise
 
@@ -202,8 +208,8 @@ class RemoteRsyncStaging(object):
                 or save_last_days is False \
                 or save_last_days == 0:
             # skipping deletion if save_last_days == None or False or 0
-            print 'Skip deletion of old snapshots because of '\
-                  'save_last_days == {}'.format(save_last_days)
+            logger.info('Skip deletion of old snapshots because of '
+                        'save_last_days == {}'.format(save_last_days))
             return
         warn_date = now - datetime.timedelta(days=save_last_days)
         warn_date = datetime.datetime.combine(warn_date, datetime.time(0))
@@ -230,5 +236,5 @@ class RemoteRsyncStaging(object):
                 if not dir_links:
                     self.rsync_delete_dir(dir_path)
                 else:
-                    print 'Skip deletion of "{}" because there are '\
-                          'symlinks found: {}'.format(d, dir_links)
+                    logger.info('Skip deletion of "{}" because there are '
+                                'symlinks found: {}'.format(d, dir_links))
