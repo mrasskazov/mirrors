@@ -9,10 +9,10 @@ import subprocess
 import tempfile
 
 
-now = datetime.datetime.now()
-staging_snapshot_stamp = \
-    '{:04}-{:02}-{:02}-{:02}{:02}{:02}'.format(
-        now.year, now.month, now.day, now.hour, now.minute, now.second)
+now = datetime.datetime.utcnow()
+staging_snapshot_stamp_format = r'%Y-%m-%d-%H%M%S'
+staging_snapshot_stamp_regexp = r'[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{6}'
+staging_snapshot_stamp = now.strftime(staging_snapshot_stamp_format)
 
 
 class RemoteRsyncStaging(object):
@@ -32,8 +32,20 @@ class RemoteRsyncStaging(object):
         self.files_dir = files_dir
         self.save_last_days = save_last_days
         self.rsync_extra_params = rsync_extra_params
-        self.staging_snapshot_stamp = staging_snapshot_stamp
         self.staging_postfix = staging_postfix
+        self.staging_snapshot_stamp = staging_snapshot_stamp
+        self.staging_snapshot_stamp_format = staging_snapshot_stamp_format
+        if re.match(staging_snapshot_stamp_regexp,
+                    self.staging_snapshot_stamp) \
+                is not None:
+            self.staging_snapshot_stamp_regexp = staging_snapshot_stamp_regexp
+        else:
+            raise RuntimeError('Wrong regexp for staging_snapshot_stamp\n'
+                               'staging_snapshot_stamp = "{}"\n'
+                               'staging_snapshot_stamp_regexp = "{}"'.
+                               format(staging_snapshot_stamp,
+                                      staging_snapshot_stamp_regexp)
+                               )
 
     @property
     def url(self):
@@ -176,8 +188,47 @@ class RemoteRsyncStaging(object):
                            dest=self.staging_link_url,
                            opts='-l')
             # cleaning of old snapshots
+            self._remove_old_snapshots()
             return exitcode, out, err
         except RuntimeError as e:
             print e.message
             self.rsync_delete_dir(self.staging_dir_path)
             raise
+
+    def _remove_old_snapshots(self, save_last_days=None):
+        if save_last_days is None:
+            save_last_days = self.save_last_days
+        if save_last_days is None \
+                or save_last_days is False \
+                or save_last_days == 0:
+            # skipping deletion if save_last_days == None or False or 0
+            print 'Skip deletion of old snapshots because of '\
+                  'save_last_days == {}'.format(save_last_days)
+            return
+        warn_date = now - datetime.timedelta(days=save_last_days)
+        warn_date = datetime.datetime.combine(warn_date, datetime.time(0))
+        dirs = self.rsync_ls_dirs(
+            '{}/'.format(self.files_path),
+            pattern='^{}-{}'.format(self.mirror_name,
+                                    self.staging_snapshot_stamp_regexp)
+        )[1]
+        links = self.rsync_ls_symlinks('{}/'.format(self.root_path))[1]
+        links += self.rsync_ls_symlinks('{}/'.format(self.files_path))[1]
+        for d in dirs:
+            dir_date = datetime.datetime.strptime(
+                d,
+                '{}-{}'.format(self.mirror_name,
+                               self.staging_snapshot_stamp_format)
+            )
+            dir_date = datetime.datetime.combine(dir_date, datetime.time(0))
+            dir_path = '{}/{}'.format(self.files_path, d)
+            if dir_date < warn_date:
+                dir_links = [_[0] for _ in links
+                             if _[1] == d
+                             or _[1].endswith('/{}'.format(d))
+                             ]
+                if not dir_links:
+                    self.rsync_delete_dir(dir_path)
+                else:
+                    print 'Skip deletion of "{}" because there are '\
+                          'symlinks found: {}'.format(d, dir_links)
