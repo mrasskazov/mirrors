@@ -28,6 +28,11 @@ if [ -n "$MIRROR_POSTFIX" ]; then
     export MIRROR_FUEL="http://osci-obs.vm.mirantis.net:82/centos-fuel-${mirror}/centos/"
     export MIRROR_FUEL_UBUNTU="http://osci-obs.vm.mirantis.net:82/ubuntu-fuel-${mirror}/reprepro"
 fi
+
+if [ "$mirror" = "master" ] && [ -z "$MIRROR_POSTFIX" ] ; then
+    export MIRROR_FUEL="http://osci-obs.vm.mirantis.net:82/centos-fuel-${mirror}/centos/"
+    export MIRROR_FUEL_UBUNTU="http://osci-obs.vm.mirantis.net:82/ubuntu-fuel-${mirror}/reprepro"
+fi
 #set docker mirror to srt
 export MIRROR_DOCKER=${MIRROR_DOCKER:-http://osci-mirror-srt.srt.mirantis.net/fwm/${mirror}/docker}
 # dirty hack for first run
@@ -85,5 +90,6 @@ else
   echo "MIRROR_VERSION = ${MIRROR_VERSION}" >> ${WORKSPACE:-"."}/mirror_staging.txt
   echo "MIRROR_BASE = $MIRROR_BASE" >> ${WORKSPACE:-"."}/mirror_staging.txt
   echo "FUEL_MAIN_BRANCH = ${FUEL_MAIN_BRANCH}" >> ${WORKSPACE:-"."}/mirror_staging.txt
+  echo "extra_commits = ${extra_commits}" >> ${WORKSPACE:-"."}/mirror_staging.txt
   echo "Updated: ${MIRROR_VERSION}<br> <a href='http://mirror.fuel-infra.org//${FILESROOT}/${TGTDIR}'>ext</a> <a href='http://${RSYNCHOST_MSK}/${FILESROOT}/${TGTDIR}'>msk</a> <a href='http://${RSYNCHOST_SRT}/${FILESROOT}/${TGTDIR}'>srt</a> <a href='http://${RSYNCHOST_KHA}/${FILESROOT}/${TGTDIR}'>kha</a>"
 fi
