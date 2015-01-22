@@ -32,6 +32,8 @@ fi
 if [ "$mirror" = "master" ] && [ -z "$MIRROR_POSTFIX" ] ; then
     export MIRROR_FUEL="http://osci-obs.vm.mirantis.net:82/centos-fuel-${mirror}/centos/"
     export MIRROR_FUEL_UBUNTU="http://osci-obs.vm.mirantis.net:82/ubuntu-fuel-${mirror}/reprepro"
+    export EXTRA_RPM_REPOS="http://osci-obs.vm.mirantis.net:82/centos-fuel-6.1-stable/centos/"
+    export EXTRA_DEB_REPOS="http://osci-obs.vm.mirantis.net:82/ubuntu-fuel-6.1-stable/reprepro/"
 fi
 #set docker mirror to srt
 export MIRROR_DOCKER=${MIRROR_DOCKER:-http://osci-mirror-srt.srt.mirantis.net/fwm/${mirror}/docker}
