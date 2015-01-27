@@ -70,6 +70,10 @@ ENDRELEASE
         export SRC="rsync://mirror.yandex.ru/fedora-epel"
         export EXCLUDE='--exclude=i386 --exclude=ppc* --exclude=4* --exclude=5* --exclude=7* --exclude=testing'
         ;;
+    "jpackage")
+        export SRC="rsync://rsync.mirrors.dotsrc.org/jpackage/5.0"
+        export EXCLUDE='--exclude=fedora* --exclude=redhat-el*'
+        ;;
     *)
         fatal "Wrong source mirror '$SRC_MIRR'"
 esac
