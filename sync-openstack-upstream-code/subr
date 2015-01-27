@@ -40,7 +40,7 @@ ALL_PROJECTS="$ALL_PROJECTS murano  murano-dashboard "
 #ALL_PROJECTS="$ALL_PROJECTS murano-api "
 ALL_PROJECTS="$ALL_PROJECTS mistral  mistral-dashboard  mistral-extra "
 #ALL_PROJECTS="$ALL_PROJECTS fuel-library  fuel-web  fuel-main  fuel-ostf  fuel-docs  fuel-devops  fuel-astute  fuel-provision "
-ALL_CLIENT_PROJECTS="cinder glance keystone nova neutron swift heat ceilometer sahara murano designate ironic trove barbican mistral"
+ALL_CLIENT_PROJECTS="cinder glance keystone nova neutron swift heat ceilometer sahara murano designate ironic trove barbican mistral openstack"
 #ALL_CLIENT_PROJECTS="$ALL_CLIENT_PROJECTS savanna quantum"
 
 PROJECTS=""
