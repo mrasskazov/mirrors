@@ -66,6 +66,10 @@ ENDRELEASE
             apt-mirror || fatal "apt-mirror failed"
         }
         ;;
+    "epel")
+        export SRC="rsync://mirror.yandex.ru/fedora-epel"
+        export EXCLUDE='--exclude=i386 --exclude=ppc* --exclude=4* --exclude=5* --exclude=7* --exclude=testing'
+        ;;
     *)
         fatal "Wrong source mirror '$SRC_MIRR'"
 esac
