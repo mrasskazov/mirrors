@@ -28,6 +28,7 @@ init_repo() {
 }
 
 ALL_PROJECTS=" cinder  glance  horizon  keystone  nova  neutron  swift  tempest  heat  ceilometer "
+ALL_PROJECTS="$ALL_PROJECTS neutron-fwaas  neutron-lbaas  neutron-vpnaas "
 #ALL_PROJECTS="$ALL_PROJECTS quantum "
 ALL_PROJECTS="$ALL_PROJECTS oslo  oslo-incubator  oslo.config  oslo.db  oslo.i18n  oslo.messaging  oslo.rootwrap  oslo.utils  oslo.version  oslo.vmware  oslosphinx  oslotest  oslo.serialization  oslo.middleware  oslo.log  oslo.concurrency  oslo.context "
 ALL_PROJECTS="$ALL_PROJECTS glance_store "
