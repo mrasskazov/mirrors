@@ -40,7 +40,7 @@ ALL_PROJECTS="$ALL_PROJECTS murano  murano-dashboard "
 #ALL_PROJECTS="$ALL_PROJECTS murano-api "
 ALL_PROJECTS="$ALL_PROJECTS mistral  mistral-dashboard  mistral-extra "
 #ALL_PROJECTS="$ALL_PROJECTS fuel-library  fuel-web  fuel-main  fuel-ostf  fuel-docs  fuel-devops  fuel-astute  fuel-provision "
-ALL_CLIENT_PROJECTS="cinder glance keystone nova neutron swift heat ceilometer sahara murano designate ironic trove barbican mistral openstack"
+ALL_CLIENT_PROJECTS="cinder glance keystone nova neutron swift heat ceilometer sahara murano designate ironic trove barbican mistral openstack congress"
 #ALL_CLIENT_PROJECTS="$ALL_CLIENT_PROJECTS savanna quantum"
 
 ALL_PROJECTS="$ALL_PROJECTS project-config system-config "
@@ -53,7 +53,7 @@ ALLOWED_BRANCHES_system_config='master'
 
 PROJECTS=""
 GITHUB_REMOTE_oslo="git://github.com/openstack/oslo-incubator.git"
-STACKFORGE_PROJECTS="murano murano-api murano-dashboard python-muranoclient fuel-library fuel-web fuel-main fuel-ostf fuel-docs fuel-devops fuel-astute fuel-provision mistral mistral-dashboard mistral-extra python-mistralclient"
+STACKFORGE_PROJECTS="murano murano-api murano-dashboard python-muranoclient fuel-library fuel-web fuel-main fuel-ostf fuel-docs fuel-devops fuel-astute fuel-provision mistral mistral-dashboard mistral-extra python-mistralclient python-congressclient"
 
 for _prj in $STACKFORGE_PROJECTS; do
     declare GITHUB_REMOTE_${_prj//-/_}="git://github.com/stackforge/$_prj.git"
