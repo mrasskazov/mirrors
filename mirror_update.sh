@@ -81,6 +81,13 @@ ENDRELEASE
             createrepo /media/mirrors/yum_update/spacewalk/ || fatal "createrepo failed"
         }
         ;;
+    "zabbix")
+        export SRC="/media/mirrors/yum_update/zabbix"
+        function pre_download() {
+            reposync -c $TOP_DIR/zabbix.conf -l -m -d --download_path=/media/mirrors/yum_update/ || fatal "reposync failed"
+            createrepo /media/mirrors/yum_update/zabbix/ || fatal "createrepo failed"
+        }
+        ;;
     *)
         fatal "Wrong source mirror '$SRC_MIRR'"
 esac
