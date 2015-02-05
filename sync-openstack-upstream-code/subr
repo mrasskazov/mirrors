@@ -43,13 +43,17 @@ ALL_PROJECTS="$ALL_PROJECTS mistral  mistral-dashboard  mistral-extra "
 ALL_CLIENT_PROJECTS="cinder glance keystone nova neutron swift heat ceilometer sahara murano designate ironic trove barbican mistral openstack congress"
 #ALL_CLIENT_PROJECTS="$ALL_CLIENT_PROJECTS savanna quantum"
 
-ALL_PROJECTS="$ALL_PROJECTS project-config system-config "
-GITHUB_REMOTE_project_config="git://github.com/openstack-infra/project-config.git"
-MIRANTIS_REMOTE_project_config="ssh://${MIRANTIS_USERNAME:+$MIRANTIS_USERNAME@}${GERRIT_HOST}:29418/mos-infra/project-config.git"
-ALLOWED_BRANCHES_project_config='master'
-GITHUB_REMOTE_system_config="git://github.com/openstack-infra/system-config.git"
-MIRANTIS_REMOTE_system_config="ssh://${MIRANTIS_USERNAME:+$MIRANTIS_USERNAME@}${GERRIT_HOST}:29418/mos-infra/system-config.git"
-ALLOWED_BRANCHES_system_config='master'
+INFRA_PROJECTS="project-config system-config puppet-etherpad-lite puppet-jenkins puppet-lodgeit puppet-meetbot"
+
+ALL_PROJECTS="$ALL_PROJECTS ${INFRA_PROJECTS} "
+
+for _prj in ${INFRA_PROJECTS}; do
+    __prj=${_prj//-/_}
+    declare GITHUB_REMOTE_${__prj}="git://github.com/openstack-infra/${_prj}.git"
+    declare MIRANTIS_REMOTE_${__prj}="ssh://${MIRANTIS_USERNAME:+$MIRANTIS_USERNAME@}${GERRIT_HOST}:29418/mos-infra/${_prj}.git"
+    declare ALLOWED_BRANCHES_${__prj}='master'
+done
+
 
 PROJECTS=""
 GITHUB_REMOTE_oslo="git://github.com/openstack/oslo-incubator.git"
