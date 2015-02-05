@@ -43,7 +43,7 @@ ALL_PROJECTS="$ALL_PROJECTS mistral  mistral-dashboard  mistral-extra "
 ALL_CLIENT_PROJECTS="cinder glance keystone nova neutron swift heat ceilometer sahara murano designate ironic trove barbican mistral openstack congress"
 #ALL_CLIENT_PROJECTS="$ALL_CLIENT_PROJECTS savanna quantum"
 
-INFRA_PROJECTS="project-config system-config puppet-etherpad-lite puppet-jenkins puppet-lodgeit puppet-meetbot"
+INFRA_PROJECTS="project-config system-config puppet-etherpad_lite puppet-jenkins puppet-lodgeit puppet-meetbot"
 
 ALL_PROJECTS="$ALL_PROJECTS ${INFRA_PROJECTS} "
 
