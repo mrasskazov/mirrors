@@ -36,9 +36,27 @@ if [ "$mirror" = "master" ] && [ -z "$MIRROR_POSTFIX" ] ; then
     export EXTRA_DEB_REPOS="http://osci-obs.vm.mirantis.net:82/ubuntu-fuel-6.1-stable/reprepro/ precise main"
 fi
 #set docker mirror to srt
-export MIRROR_DOCKER=${MIRROR_DOCKER:-http://osci-mirror-srt.srt.mirantis.net/fwm/${mirror}/docker}
-# dirty hack for first run
-wget -qO /dev/null $MIRROR_DOCKER || export MIRROR_DOCKER=http://osci-mirror-srt.srt.mirantis.net/fwm/5.1/docker
+export MIRROR_DOCKER_HOST=${MIRROR_DOCKER_HOST:-"osci-mirror-srt.srt.mirantis.net"}
+export MIRROR_DOCKER_PATH=${MIRROR_DOCKER_PATH:-"fwm/${mirror}/docker"}
+export MIRROR_DOCKER="http://$MIRROR_DOCKER_HOST/$MIRROR_DOCKER_PATH"
+export RSYNCMODULE='mirror-sync'
+
+export DOCKER_IMAGES=${DOCKER_IMAGES:-'centos(centos:centos6) busybox(busybox)'}
+export DOCKER_IMAGES_FORCE_RELOAD=${DOCKER_IMAGES_FORCE_RELOAD:-false}
+for IMAGE in $DOCKER_IMAGES; do
+    IMAGE_FILE=$(echo $IMAGE | awk -F'[( )]' '{print $1}')
+    IMAGE_NAME=$(echo $IMAGE | awk -F'[( )]' '{print $2}')
+    # check that image files already on server
+    wget -qO - ${MIRROR_DOCKER}/ | grep -Eo ">${IMAGE_FILE}.tar.xz<" \
+        && [ "$DOCKER_IMAGES_FORCE_RELOAD" != 'true' ] \
+        && continue
+
+    DOCKER_IMAGES_TEMP_DIR=${DOCKER_IMAGES_TEMP_DIR:-$(mktemp -d)}
+    docker pull ${IMAGE_NAME} \
+        && docker save ${IMAGE_NAME} | xz -zc -4 > ${DOCKER_IMAGES_TEMP_DIR}/${IMAGE_FILE}.tar.xz \
+        && rsync -avPzt --include="${IMAGE_FILE}.tar.xz" '--exclude=*' ${DOCKER_IMAGES_TEMP_DIR}/ rsync://$MIRROR_DOCKER_HOST/$RSYNCMODULE/$MIRROR_DOCKER_PATH/ \
+        || exit_with_error "Can't get docker image ${IMAGE_NAME}"
+done
 
 extra="$extra --del"
 
